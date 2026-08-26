@@ -1,4 +1,4 @@
-# PORTMASTER_MY_REPO
+# PORTMASTERMYREPO
 
 My Repo For Portmaster
 
@@ -6,5 +6,5 @@ My Repo For Portmaster
 # ADD REPO
 
 ```
-https://github.com/Lobanokivan11/PORTMASTER_MY_REPO/releases/latest/download/ports.json
+https://github.com/Lobanokivan11/PORTMASTERMYREPO/releases/latest/download/ports.json
 ```
