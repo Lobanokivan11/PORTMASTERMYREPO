@@ -1,7 +1,8 @@
 name: PortMaster Release
 
 on:
-  # We only run manually
+  push:
+  pull_request: 
   workflow_dispatch:
 
 concurrency: 
