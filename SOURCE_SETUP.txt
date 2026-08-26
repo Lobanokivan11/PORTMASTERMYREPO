@@ -9,7 +9,7 @@ REPO_NAME="Lobanokivan11's PortMaster Repo."
 
 # A 2-4 letter prefix for storing auxillary port files (screenshots currently)
 # For example "xmpl"
-REPO_PREFIX="lobpm"
+REPO_PREFIX="lobp"
 
 ## This is only required by PortMaster-New Repo.
 PMGUI_RELEASE=""
