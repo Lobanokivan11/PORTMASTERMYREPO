@@ -14,7 +14,7 @@ from pathlib import Path
 
 #############################################################################
 ## Change these to point to your PortMaster repo
-PORTMASTER_DIR = Path("../PortMaster-Multiverse")
+PORTMASTER_DIR = Path("../PortMaster")
 
 #############################################################################
 
@@ -344,10 +344,6 @@ class ZipPort():
             new_name = self.port_dir / "README.md"
             self.file_structure[new_name] = markdown
 
-        for markdown in ( / "markdown").glob(f"{self.port_name}.*"):
-            new_name = self.port_dir / "README.md"
-            self.file_structure[new_name] = markdown
-
         self.items = []
         self.dirs = []
         self.scripts = []
@@ -447,9 +443,9 @@ def main(argv):
     low_argv = list(map(str.lower, argv))
 
     for port in ports:
-        # if port.zip_file.name.lower() not in low_argv:
-        #     print(f"- {port.port_name} skipping.")
-        #     continue
+        if port.zip_file.name.lower() not in low_argv:
+            print(f"- {port.port_name} skipping.")
+            continue
 
         print(f"- {port.port_name}")
         port.extract()

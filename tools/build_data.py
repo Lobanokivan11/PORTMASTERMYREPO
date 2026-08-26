@@ -271,9 +271,8 @@ def main(argv):
         check_large_files(port_dir, large_files, hash_cache, chunk_size)
 
     # Build any large runtimes.
-    if RUNTIMES_DIR.is_dir():
-        large_files, chunk_size = load_port(RUNTIMES_DIR)
-        check_large_files(RUNTIMES_DIR, large_files, hash_cache)
+    large_files, chunk_size = load_port(RUNTIMES_DIR)
+    check_large_files(RUNTIMES_DIR, large_files, hash_cache)
 
     errors = 0
     warnings = 0
