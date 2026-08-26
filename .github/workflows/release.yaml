@@ -43,6 +43,7 @@ jobs:
         with:
           repository: ${{ github.repository }}
           latest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
           out-file-path: "releases"
           fileName: "*.json"
 
@@ -50,6 +51,7 @@ jobs:
         with:
           repository: ${{ github.repository }}
           latest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
           out-file-path: "releases"
           fileName: "images.zip"
 
