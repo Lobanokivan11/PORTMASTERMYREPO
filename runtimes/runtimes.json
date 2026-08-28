@@ -1,0 +1,9 @@
+{
+    "wine-runtime.squashfs":  {
+        "name": "WINE",
+        "default": "aarch64",
+        "arch": {
+            "aarch64": "wine-runtime.squashfs"
+        }
+    }
+}
