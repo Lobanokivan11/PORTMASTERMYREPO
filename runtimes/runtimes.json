@@ -5,5 +5,12 @@
         "arch": {
             "aarch64": "wine-runtime.squashfs"
         }
+    },
+    "box64-runtime.squashfs":  {
+        "name": "BOX64",
+        "default": "aarch64",
+        "arch": {
+            "aarch64": "box64-runtime.squashfs"
+        }
     }
 }
