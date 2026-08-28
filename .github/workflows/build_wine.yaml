@@ -1,0 +1,67 @@
+name: Build Portmaster Wine SquashFS
+
+on:
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for GH CLI
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools
+
+      - name: Download latest wine-tkg artifact
+        run: |
+          REPO="Frogging-Family/wine-tkg-git" 
+          WORKFLOW_NAME="Wine Ubuntu CI" 
+
+          echo "Finding latest successful run for workflow..."
+          RUN_ID=$(gh run list --repo "$REPO" --workflow "$WORKFLOW_NAME" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          
+          if [ -z "$RUN_ID" ]; then
+            echo "No successful workflow runs found."
+            exit 1
+          fi
+          echo "Found Run ID: $RUN_ID"
+
+          echo "Listing artifacts for Run $RUN_ID..."
+          ARTIFACT_NAME=$(gh run view "$RUN_ID" --repo "$REPO" --json artifacts --jq '.artifacts[0].name')
+          echo "Downloading artifact: $ARTIFACT_NAME"
+          gh run download "$RUN_ID" --repo "$REPO" --name "$ARTIFACT_NAME" --dir ./wine-zip
+
+      - name: Structure Portmaster Wine runtime
+        run: |
+          mkdir -p runtime_root
+          TAR_FILE=$(find ./wine-zip -name "*.tar*" -print -quit)
+          
+          if [ -z "$TAR_FILE" ]; then
+            echo "No tar archive found inside the downloaded artifact."
+            exit 1
+          fi
+          echo "Extracting archive: $TAR_FILE"
+          
+          tar -xf "$TAR_FILE" -C runtime_root --strip-components=1 || tar -xf "$TAR_FILE" -C runtime_root
+          
+          if [ -f "runtime_root/bin/wine" ]; then
+            chmod +x runtime_root/bin/wine
+          else
+            echo "Warning: runtime_root/bin/wine not found. Check internal paths."
+          fi
+
+      - name: Build SquashFS profile
+        run: |
+          mksquashfs runtime_root/ wine-tkg-runtime.squashfs -comp xz
+
+      - name: Upload Portmaster Runtime Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wine-tkg-portmaster-runtime
+          path: wine-tkg-runtime.squashfs
