@@ -89,7 +89,7 @@ jobs:
           export DISPLAY=:99
           wine wineboot.exe --init && wineserver -w
           kill $XVFB_PID
-          tar -cJf runtime_root/wineprefix.tar.xz -C "${{ github.workspace }}" wineprefix
+          tar -czf runtime_root/wineprefix.tar.gz -C "${{ github.workspace }}/wineprefix" .
 
       - name: Build SquashFS profile
         run: |
