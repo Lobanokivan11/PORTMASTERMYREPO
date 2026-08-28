@@ -102,7 +102,9 @@ echo "[LAUNCHER]: Shutting down Wine and cleaning RAM..."
 "$MNT_RUNTIME/bin/wineserver" -k
 sleep 1
 umount -f "$MNT_RUNTIME" 2>/dev/null
+umount -f "$MNT_BOX64" 2>/dev/null
 rm -rf "$MNT_RUNTIME"
+rm -rf "$MNT_BOX64"
 rm -rf "/tmp/farmfrenzy"
 
 pm_finish
