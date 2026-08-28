@@ -32,14 +32,17 @@ jobs:
           fi
           echo "Found Run ID: $RUN_ID"
 
-          echo "Listing artifacts for Run $RUN_ID..."
-          ARTIFACT_NAME=$(gh run view "$RUN_ID" --repo "$REPO" --json artifacts --jq '.artifacts[0].name')
-          echo "Downloading artifact: $ARTIFACT_NAME"
-          gh run download "$RUN_ID" --repo "$REPO" --name "$ARTIFACT_NAME" --dir ./wine-zip
+          # By omitting --name, gh run download pulls all artifacts from the run
+          # into separate subfolders inside ./wine-zip
+          echo "Downloading all artifacts for Run $RUN_ID..."
+          gh run download "$RUN_ID" --repo "$REPO" --dir ./wine-zip
 
       - name: Structure Portmaster Wine runtime
         run: |
+          # Create target directory for SquashFS
           mkdir -p runtime_root
+          
+          # Find the .tar archive anywhere inside the downloaded artifact folders
           TAR_FILE=$(find ./wine-zip -name "*.tar*" -print -quit)
           
           if [ -z "$TAR_FILE" ]; then
@@ -48,8 +51,10 @@ jobs:
           fi
           echo "Extracting archive: $TAR_FILE"
           
+          # Extract tar directly into runtime_root
           tar -xf "$TAR_FILE" -C runtime_root --strip-components=1 || tar -xf "$TAR_FILE" -C runtime_root
           
+          # Ensure execution permissions for the main binary
           if [ -f "runtime_root/bin/wine" ]; then
             chmod +x runtime_root/bin/wine
           else
@@ -58,6 +63,7 @@ jobs:
 
       - name: Build SquashFS profile
         run: |
+          # Compress into SquashFS format using xz compression
           mksquashfs runtime_root/ wine-tkg-runtime.squashfs -comp xz
 
       - name: Upload Portmaster Runtime Artifact
