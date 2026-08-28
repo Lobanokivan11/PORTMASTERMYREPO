@@ -25,10 +25,11 @@ LOG=${LOG:-"$GAMEDIR/log.txt"}
 cd "$GAMEDIR/data"
 > "$LOG" && exec > >(tee "$LOG") 2>&1
 
-SQUASH_IMAGE="wine-runtime.squashfs"
+PORTMASTER_LIBS="$controlfolder/libs"
+SQUASH_IMAGE="$PORTMASTER_LIBS/wine-runtime.squashfs"
+BOX64_IMAGE="$PORTMASTER_LIBS/box64-runtime.squashfs"
 MNT_RUNTIME="/tmp/farmfrenzy_runtime"
 WINEPREFIX="/tmp/farmfrenzy/.wine"
-BOX64_IMAGE="box64-runtime.squashfs"
 
 if [ ! -f "$SQUASH_IMAGE" ] || [ ! -f "$BOX64_IMAGE" ]; then
     echo "[ERROR]: SquashFS images not found at $SQUASH_IMAGE or $BOX64_IMAGE"
