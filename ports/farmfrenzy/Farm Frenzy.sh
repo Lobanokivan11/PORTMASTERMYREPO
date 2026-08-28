@@ -50,7 +50,7 @@ LD_LIBRARY_PATH="$MNT_RUNTIME/lib:$MNT_BOX64/lib:$LD_LIBRARY_PATH"
 
 echo "[LAUNCHER]: Extracting main wineprefix to RAM..."
 mkdir -p "$WINEPREFIX"
-tar -xf "$MNT_RUNTIME/wineprefix.tar.xz" -C "$WINEPREFIX" --strip-components=1
+tar -xzf "$MNT_RUNTIME/wineprefix.tar.gz" -C "$WINEPREFIX"
 
 if [ -f "$GAMEDIR/bottle.json" ]; then
     RUNNER=$(grep -o '"runner"[[:space:]]*:[[:space:]]*"[^"]*' "$GAMEDIR/bottle.json" | sed 's/"runner"[[:space:]]*:[[:space:]]*"//')
