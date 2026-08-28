@@ -81,8 +81,10 @@ jobs:
           export WINEPREFIX="${{ github.workspace }}/wineprefix"
           export PATH="${{ github.workspace }}/runtime_root/bin:$PATH"
           export WINELOADER="${{ github.workspace }}/runtime_root/bin/wine"
+          export WINEDEBUG=-all
+          export WINEDLLOVERRIDES="mscoree,mshtml="
           echo "Initializing quiet Wine prefix..."
-          wineboot --init
+          xvfb-run --server-args="-screen 0 1024x768x24" wineboot --init
           wineserver -w
           tar -cJf runtime_root/wineprefix.tar.xz -C "${{ github.workspace }}" wineprefix
 
