@@ -28,6 +28,7 @@ cd "$GAMEDIR/data"
 PORTMASTER_LIBS="$controlfolder/libs"
 SQUASH_IMAGE="$PORTMASTER_LIBS/wine-runtime.squashfs"
 BOX64_IMAGE="$PORTMASTER_LIBS/box64-runtime.squashfs"
+MNT_BOX64="/tmp/farmfrenzy_box64"
 MNT_RUNTIME="/tmp/farmfrenzy_runtime"
 WINEPREFIX="/tmp/farmfrenzy/.wine"
 
@@ -40,12 +41,24 @@ echo "[LAUNCHER]: Mounting Wine runtime SquashFS..."
 mkdir -p "$MNT_RUNTIME"
 mount -t squashfs -o loop "$SQUASH_IMAGE" "$MNT_RUNTIME"
 
+echo "[LAUNCHER]: Mounting Box64 runtime SquashFS..."
+mkdir -p "$MNT_BOX64"
+mount -t squashfs -o loop "$BOX64_IMAGE" "$MNT_BOX64"
+
+PATH="$MNT_RUNTIME/bin:$MNT_BOX64/bin:$PATH"
+LD_LIBRARY_PATH="$MNT_RUNTIME/lib:$MNT_BOX64/lib:$LD_LIBRARY_PATH"
+
 echo "[LAUNCHER]: Extracting main wineprefix to RAM..."
 mkdir -p "$WINEPREFIX"
 tar -xf "$MNT_RUNTIME/wineprefix.tar.xz" -C "$WINEPREFIX" --strip-components=1
 
-RUNNER=$(jq -r '.runner // "default"' "$GAMEDIR/bottle.json")
-WINEARCH=$(jq -r '.env.WINEARCH // "win64"' "$GAMEDIR/bottle.json")
+if [ -f "$GAMEDIR/bottle.json" ]; then
+    RUNNER=$(grep -o '"runner"[[:space:]]*:[[:space:]]*"[^"]*' "$GAMEDIR/bottle.json" | sed 's/"runner"[[:space:]]*:[[:space:]]*"//')
+    WINEARCH=$(grep -o '"winearch"[[:space:]]*:[[:space:]]*"[^"]*' "$GAMEDIR/bottle.json" | sed 's/"winearch"[[:space:]]*:[[:space:]]*"//')
+fi
+
+RUNNER=${RUNNER:-"default"}
+WINEARCH=${WINEARCH:-"win64"}
 
 case "$RUNNER" in
     default)
@@ -53,7 +66,9 @@ case "$RUNNER" in
         ;;
     *)
         echo "Error: Unknown runner '$RUNNER' specified in bottle.json"
-        umount -f "$MNT_RUNTIME" && rm -rf "$MNT_RUNTIME" "$WINEPREFIX"
+        umount -f "$MNT_RUNTIME" 2>/dev/null
+        umount -f "$MNT_BOX64" 2>/dev/null
+        rm -rf "$MNT_RUNTIME" "$MNT_BOX64" "$WINEPREFIX"
         exit 1
         ;;
 esac
@@ -65,17 +80,17 @@ BOX="$MNT_BOX64/bin/box64"
 
 echo "[LAUNCHER]: Using runner '$RUNNER' with WINEPREFIX='$WINEPREFIX' BOX='$BOX'"
 
-if command -v jq >/dev/null; then
-    while IFS="=" read -r k v; do
-        export "$k=$v"
-    done < <(jq -r '.env | to_entries | .[] | "\(.key)=\(.value)"' "$GAMEDIR/bottle.json")
-else
-    echo "Error: jq not found"
-    umount -f "$MNT_RUNTIME" && rm -rf "$MNT_RUNTIME" "$WINEPREFIX"
-    exit 1
+if [ -f "$GAMEDIR/bottle.json" ]; then
+    while IFS= read -r line; do
+        k=$(echo "$line" | cut -d':' -f1 | tr -d '"[:space:]')
+        v=$(echo "$line" | cut -d':' -f2- | tr -d '"[:space:],')
+        if [ -n "$k" ] && [ "$k" != "env" ]; then
+            export "$k=$v"
+        fi
+    done < <(grep -A 5 '"env"' "$GAMEDIR/bottle.json" | grep -v '"env"' | grep -v '}')
 fi
 
-CONFIGDIRS=$(jq -r '.configdir[]? // empty' "$GAMEDIR/bottle.json")
+CONFIGDIRS=$(grep -o '"configdir"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$GAMEDIR/bottle.json" | sed -e 's/.*\[//' -e 's/\].*//' -e 's/"//g' -e 's/,/ /g')
 if [ -n "$CONFIGDIRS" ] && [ -n "$WINEPREFIX" ]; then
     mkdir -p "$GAMEDIR/config"
 
