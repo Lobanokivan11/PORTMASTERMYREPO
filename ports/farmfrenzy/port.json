@@ -1,0 +1,36 @@
+{
+  "version": 4,
+  "name": "farmfrenzy.zip",
+  "items": [
+    "Farm Frenzy.sh",
+    "farmfrenzy"
+  ],
+  "items_opt": [],
+  "attr": {
+    "title": "Farm Frenzy",
+    "porter": [
+      "Lobivan11"
+    ],
+    "desc": "Farm Frenzy is a 2007 casual arcade time-management video game developed by Melesta and published by Alawar Entertainment. It is the first game of the Farm Frenzy series created by Alex Meleshkevich and Kirill Plotnikov. It won “Best Casual Game” award at the 2008 Russian Game Developers Conference. ",
+    "desc_md": null,
+    "inst": "All game files already included",
+    "inst_md": null,
+    "genres": [
+      "strategy"
+    ],
+    "image": null,
+    "rtr": false,
+    "exp": false,
+    "runtime": [
+      "wine-runtime.squashfs",
+      "box64-runtime.squashfs"
+    ],
+    "store": [],
+    "availability": "full",
+    "reqs": [
+      "opengl"
+    ],
+    "arch": [],
+    "min_glibc": ""
+  }
+}

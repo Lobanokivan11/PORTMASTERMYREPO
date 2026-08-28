@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "name": "farmfrenzy.zip",
+  "items": [
+    "Farm Frenzy.sh",
+    "farmfrenzy"
+  ],
+  "runner": "default",
+  "deps": [
+  ],
+  "env": {
+    "WINEDEBUG": "-all",
+    "WINEARCH": "win64"
+  },
+  "configdir": [
+    "drive_c/ProgramData/Farm Frenzy"
+  ],
+  "attr": {
+    "title": "Farm Frenzy",
+    "desc": "FIRST GAME OF FARM FRENZY FRANCHISE",
+    "inst": "Add your game files to the data folder",
+    "genres": [
+	  "strategy"
+    ],
+    "availability": "paid"
+  }
+}
