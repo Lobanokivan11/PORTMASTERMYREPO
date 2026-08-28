@@ -16,10 +16,11 @@ source $controlfolder/control.txt
 [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
 get_controls
 
-GAMEDIR="/$directory/windows/farmfrenzy"
+GAMEDIR="$(dirname "$0")/farmfrenzy"
 EXEC="$GAMEDIR/data/farm.exe"
 BASE=$(basename "$EXEC")
 SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig"
+LOG=${LOG:-"$GAMEDIR/log.txt"}
 
 cd "$GAMEDIR/data"
 > "$LOG" && exec > >(tee "$LOG") 2>&1
