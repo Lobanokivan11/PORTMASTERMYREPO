@@ -83,9 +83,12 @@ jobs:
           export WINELOADER="${{ github.workspace }}/runtime_root/bin/wine"
           export WINEDEBUG=-all
           export WINEDLLOVERRIDES="mscoree,mshtml="
-          echo "Initializing quiet Wine prefix..."
-          xvfb-run --server-args="-screen 0 1024x768x24" wineboot --init
-          wineserver -w
+          sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1024x768x24 &
+          XVFB_PID=$!
+          export DISPLAY=:99
+          wine wineboot.exe --init && wineserver -w
+          kill $XVFB_PID
           tar -cJf runtime_root/wineprefix.tar.xz -C "${{ github.workspace }}" wineprefix
 
       - name: Build SquashFS profile
