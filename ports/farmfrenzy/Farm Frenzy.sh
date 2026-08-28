@@ -27,15 +27,15 @@ cd "$GAMEDIR/data"
 SQUASH_IMAGE="wine-runtime.squashfs"
 MNT_RUNTIME="/tmp/farmfrenzy_runtime"
 WINEPREFIX="/tmp/farmfrenzy/.wine"
+BOX64_IMAGE="box64-runtime.squashfs"
 
-if [ ! -f "$SQUASH_IMAGE" ]; then
-    echo "[ERROR]: SquashFS image not found at $SQUASH_IMAGE"
+if [ ! -f "$SQUASH_IMAGE" ] || [ ! -f "$BOX64_IMAGE" ]; then
+    echo "[ERROR]: SquashFS images not found at $SQUASH_IMAGE or $BOX64_IMAGE"
     exit 1
 fi
 
 echo "[LAUNCHER]: Mounting Wine runtime SquashFS..."
 mkdir -p "$MNT_RUNTIME"
-sed -i "s|#.*||" /etc/filesystems 2>/dev/null
 mount -t squashfs -o loop "$SQUASH_IMAGE" "$MNT_RUNTIME"
 
 echo "[LAUNCHER]: Extracting main wineprefix to RAM..."
@@ -59,7 +59,7 @@ esac
 export LD_LIBRARY_PATH="$MNT_RUNTIME/lib:$LD_LIBRARY_PATH"
 export PATH="$MNT_RUNTIME/bin:$PATH"
 
-BOX=$([ "$WINEARCH" = "win32" ] && echo "box86" || echo "box64")
+BOX="$MNT_BOX64/bin/box64"
 
 echo "[LAUNCHER]: Using runner '$RUNNER' with WINEPREFIX='$WINEPREFIX' BOX='$BOX'"
 
