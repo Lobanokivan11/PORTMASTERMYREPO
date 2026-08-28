@@ -76,6 +76,16 @@ jobs:
           tar -xf "gecko-x86.tar.xz" -C "runtime_root/share/wine/gecko/wine-gecko-2.47.4-x86" --strip-components=1
           rm -f *.tar.xz
 
+      - name: Create Wine prefix
+        run: |
+          export WINEPREFIX="${{ github.workspace }}/wineprefix"
+          export PATH="${{ github.workspace }}/runtime_root/bin:$PATH"
+          export WINELOADER="${{ github.workspace }}/runtime_root/bin/wine"
+          echo "Initializing quiet Wine prefix..."
+          wineboot --init
+          wineserver -w
+          tar -cJf runtime_root/wineprefix.tar.xz -C "${{ github.workspace }}" wineprefix
+
       - name: Build SquashFS profile
         run: |
           # Compress into SquashFS format using xz compression
