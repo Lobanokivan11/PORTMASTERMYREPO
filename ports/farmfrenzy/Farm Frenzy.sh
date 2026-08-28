@@ -81,13 +81,15 @@ BOX="$MNT_BOX64/bin/box64"
 echo "[LAUNCHER]: Using runner '$RUNNER' with WINEPREFIX='$WINEPREFIX' BOX='$BOX'"
 
 if [ -f "$GAMEDIR/bottle.json" ]; then
+    ENV_BLOCK=$(sed -n '/"env"[[:space:]]*:[[:space:]]*{/,/}/p' "$GAMEDIR/bottle.json" | grep -v -e '"env"' -e '}')
     while IFS= read -r line; do
+        [ -z "$line" ] && continue
         k=$(echo "$line" | cut -d':' -f1 | tr -d '"[:space:]')
         v=$(echo "$line" | cut -d':' -f2- | tr -d '"[:space:],')
-        if [ -n "$k" ] && [ "$k" != "env" ]; then
+        if [ -n "$k" ]; then
             export "$k=$v"
         fi
-    done < <(grep -A 5 '"env"' "$GAMEDIR/bottle.json" | grep -v '"env"' | grep -v '}')
+    done <<< "$ENV_BLOCK"
 fi
 
 CONFIGDIRS=$(grep -o '"configdir"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$GAMEDIR/bottle.json" | sed -e 's/.*\[//' -e 's/\].*//' -e 's/"//g' -e 's/,/ /g')
