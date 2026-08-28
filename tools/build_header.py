@@ -79,8 +79,7 @@ def save_headers(header_file, header_map):
 def main(argv):
     hash_cache = None
 
-    if not GITHUB_RUN:
-        hash_cache = HashCache(CACHE_FILE)
+    hash_cache = HashCache(CACHE_FILE)
 
     if HEADER_MAP.is_file():
         header_map, headers_fixed = load_headers(HEADER_MAP)

@@ -254,7 +254,7 @@ def main(argv):
     RUNTIMES_DATA     = None
 
 
-    if not GITHUB_RUN or CACHE_FILE.is_file():
+    if not CACHE_FILE.is_file():
         file_cache = HashCache(CACHE_FILE)
 
     if not PORT_STATS.is_file():

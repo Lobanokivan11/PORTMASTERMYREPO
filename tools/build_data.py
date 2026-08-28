@@ -143,19 +143,18 @@ def load_port(port_dir):
         print("large_files = ", json.dumps(large_files, indent=4))
         print("allow_files = ", json.dumps(allow_files, indent=4))
 
-        if not GITHUB_RUN:
-            # Do not modify stuff on the github run.
-            with open(git_ignore_file, 'w') as fh:
-                print(GITIGNORE_HEADER, file=fh)
+        # Do not modify stuff on the github run.
+        with open(git_ignore_file, 'w') as fh:
+            print(GITIGNORE_HEADER, file=fh)
 
-                if chunk_size != DEFAULT_CHUNK_SIZE:
-                    print(f"## CHUNK_SIZE: {chunk_size // 1024 // 1024}", file=fh)
+            if chunk_size != DEFAULT_CHUNK_SIZE:
+                print(f"## CHUNK_SIZE: {chunk_size // 1024 // 1024}", file=fh)
 
-                for file_name in allow_files:
-                    print(f"## ALLOW: {file_name}", file=fh)
+            for file_name in allow_files:
+                print(f"## ALLOW: {file_name}", file=fh)
 
-                for file_name in git_ignores:
-                    print(file_name, file=fh)
+            for file_name in git_ignores:
+                print(file_name, file=fh)
 
     return large_files, chunk_size
 
@@ -244,24 +243,18 @@ def check_large_files(port_dir, large_files, hash_cache=None, chunk_size=DEFAULT
             combine_large_files(port_dir, large_file_name, large_file_parts)
 
         elif file_md5 != parts_md5:
-            if not GITHUB_RUN:
-                print(f"- Splitting {large_file_name} into {chunk_size} bites!")
-                split_large_files(port_dir, large_file_name, large_file_parts, chunk_size)
+            print(f"- Splitting {large_file_name} into {chunk_size} bites!")
+            split_large_files(port_dir, large_file_name, large_file_parts, chunk_size)
 
         elif file_chunk_size != chunk_size:
-            if not GITHUB_RUN:
-                print(f"- Resplitting {large_file_name} into {chunk_size} bites!")
-                split_large_files(port_dir, large_file_name, large_file_parts, chunk_size)
-
-            else:
-                print(f"::warning file={large_file_name}::{port_dir.name} has a chunk size of {chunk_size // 1024 // 1024} but {large_file_name} has a chunk size of {file_chunk_size // 1024 // 1024}")
+            print(f"- Resplitting {large_file_name} into {chunk_size} bites!")
+            split_large_files(port_dir, large_file_name, large_file_parts, chunk_size)
 
 
 def main(argv):
     hash_cache = None
 
-    if not GITHUB_RUN:
-        hash_cache = HashCache(CACHE_FILE)
+    hash_cache = HashCache(CACHE_FILE)
 
     for port_dir in sorted(PORTS_DIR.iterdir(), key=lambda x: str(x).casefold()):
         if not port_dir.is_dir():

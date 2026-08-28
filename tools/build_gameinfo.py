@@ -201,8 +201,7 @@ def parse_gameinfo(gameinfo_file, gameinfo_status):
 def main(argv):
     file_cache = None
 
-    if not GITHUB_RUN:
-        file_cache = HashCache(CACHE_FILE)
+    file_cache = HashCache(CACHE_FILE)
 
     gameinfo_status = {}
 
