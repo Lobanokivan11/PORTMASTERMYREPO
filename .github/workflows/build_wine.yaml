@@ -94,7 +94,7 @@ jobs:
       - name: Build SquashFS profile
         run: |
           # Compress into SquashFS format using xz compression
-          mksquashfs runtime_root/ wine-tkg-runtime.squashfs -comp xz -b 1M -Xdict-size 100% -no-exports -no-fragments 
+          mksquashfs runtime_root/ wine-tkg-runtime.squashfs -comp xz -b 1M -Xdict-size 100% -no-exports -no-fragments -no-xattrs
 
       - name: Upload Portmaster Runtime Artifact
         uses: actions/upload-artifact@v4
