@@ -61,10 +61,25 @@ jobs:
             echo "Warning: runtime_root/bin/wine not found. Check internal paths."
           fi
 
+      - name: Inject Wine Mono and Gecko
+        run: |
+          mkdir -p runtime_root/share/wine/mono
+          mkdir -p runtime_root/share/wine/gecko
+          curl -L https://dl.winehq.org/wine/wine-mono/11.3.0/wine-mono-11.3.0-x86.tar.xz -o mono-x86.tar.xz
+          mkdir -p "runtime_root/share/wine/mono/wine-mono-11.3.0"
+          tar -xf "mono-x86.tar.xz" -C "runtime_root/share/wine/mono/wine-mono-11.3.0" --strip-components=1
+          curl -L "https://dl.winehq.org/wine/wine-gecko/2.47.4/wine-gecko-2.47.4-x86_64.tar.xz" -o gecko-x64.tar.xz
+          mkdir -p "runtime_root/share/wine/gecko/wine-gecko-2.47.4-x86_64"
+          tar -xf "gecko-x64.tar.xz" -C "runtime_root/share/wine/gecko/wine-gecko-2.47.4-x86_64" --strip-components=1
+          curl -L "https://dl.winehq.org/wine/wine-gecko/2.47.4/wine-gecko-2.47.4-x86.tar.xz" -o gecko-x86.tar.xz
+          mkdir -p "runtime_root/share/wine/gecko/wine-gecko-2.47.4-x86"
+          tar -xf "gecko-x86.tar.xz" -C "runtime_root/share/wine/gecko/wine-gecko-2.47.4-x86" --strip-components=1
+          rm -f *.tar.xz
+
       - name: Build SquashFS profile
         run: |
           # Compress into SquashFS format using xz compression
-          mksquashfs runtime_root/ wine-tkg-runtime.squashfs -comp xz
+          mksquashfs runtime_root/ wine-tkg-runtime.squashfs -comp xz -b 1M -Xdict-size 100% -no-exports -no-fragments 
 
       - name: Upload Portmaster Runtime Artifact
         uses: actions/upload-artifact@v4
